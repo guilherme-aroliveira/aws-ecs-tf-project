@@ -63,7 +63,7 @@ resource "aws_nat_gateway" "nat_gateway" {
   tags = merge(
     local.tags,
     {
-      Name = "nat-gateway-${lookup(var.public_subnets, each.value)}"
+      Name = "nat-gateway-${index(lookup(var.public_subnets, each.key))}"
       Environment = var.environment
     }
   )
@@ -103,7 +103,7 @@ resource "aws_route_table" "private_route_table" {
   tags = merge(
     local.tags,
     {
-      Name        = "private-route-table-${lookup(var.public_subnets, each.value)}"
+      Name        = "private-route-table-${index(lookup(var.public_subnets, each.key))}"
       Environment = var.environment
     }
   )
