@@ -36,8 +36,6 @@ resource "aws_internet_gateway_attachment" "internet_gateway_attach" {
 
 // Create the EIP for the Nat Gateway
 resource "aws_eip" "nat_gateway_eip" {
-  for_each = var.public_subnets
-
   domain = "vpc"
 
   depends_on = [aws_internet_gateway.vpc_igw]
@@ -45,7 +43,7 @@ resource "aws_eip" "nat_gateway_eip" {
   tags = merge(
     local.tags,
     {
-      Name        = "elastic-ip-nat-gateway-${each.value}"
+      Name        = "elastic-ip-nat-gateway"
       Environment = var.environment
     }
   )
@@ -53,17 +51,15 @@ resource "aws_eip" "nat_gateway_eip" {
 
 // Create the Nat gateway
 resource "aws_nat_gateway" "nat_gateway" {
-  for_each = var.public_subnets
-
-  allocation_id = aws_eip.nat_gateway_eip[each.key].id
-  subnet_id     = aws_subnet.public_subnets[each.key].id # nat should be in public subnet
+  allocation_id = aws_eip.nat_gateway_eip
+  subnet_id     = aws_subnet.public_subnets["public-subnet-1"].id # nat should be in public subnet
 
   depends_on = [aws_subnet.public_subnets]
 
   tags = merge(
     local.tags,
     {
-      Name = "nat-gateway-${each.value}"
+      Name        = "nat-gateway"
       Environment = var.environment
     }
   )
@@ -91,19 +87,17 @@ resource "aws_route_table" "public_route_table" {
 
 # Create the route table for private subnets
 resource "aws_route_table" "private_route_table" {
-  for_each = var.public_subnets
-
   vpc_id = aws_vpc.main_vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gateway[each.key].id
+    nat_gateway_id = aws_nat_gateway.nat_gateway.id
   }
 
   tags = merge(
     local.tags,
     {
-      Name        = "private-route-table-${each.value}"
+      Name        = "private-route-table"
       Environment = var.environment
     }
   )
@@ -123,7 +117,7 @@ resource "aws_route_table_association" "private" {
   for_each = aws_subnet.private_subnets
 
   subnet_id      = each.value.id
-  route_table_id = aws_route_table.private_route_table[each.key].id
+  route_table_id = aws_route_table.private_route_table.id
 
   depends_on = [aws_subnet.private_subnets]
 }
