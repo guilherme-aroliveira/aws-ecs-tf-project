@@ -53,17 +53,17 @@ resource "aws_eip" "nat_gateway_eip" {
 
 // Create the Nat gateway
 resource "aws_nat_gateway" "nat_gateway" {
-  for_each = aws_subnet.public_subnets
+  for_each = var.public_subnets
 
   allocation_id = aws_eip.nat_gateway_eip[each.key].id
-  subnet_id     = each.value.id # nat should be in public subnet
+  subnet_id     = aws_subnet.public_subnets[each.key].id # nat should be in public subnet
 
   depends_on = [aws_subnet.public_subnets]
 
   tags = merge(
     local.tags,
     {
-      Name = "nat-gateway-${index(lookup(var.public_subnets, each.key))}"
+      Name = "nat-gateway-${each.value}"
       Environment = var.environment
     }
   )
@@ -91,7 +91,7 @@ resource "aws_route_table" "public_route_table" {
 
 # Create the route table for private subnets
 resource "aws_route_table" "private_route_table" {
-  for_each = aws_nat_gateway.nat_gateway
+  for_each = var.public_subnets
 
   vpc_id = aws_vpc.main_vpc.id
 
@@ -103,7 +103,7 @@ resource "aws_route_table" "private_route_table" {
   tags = merge(
     local.tags,
     {
-      Name        = "private-route-table-${index(lookup(var.public_subnets, each.key))}"
+      Name        = "private-route-table-${each.value}"
       Environment = var.environment
     }
   )
