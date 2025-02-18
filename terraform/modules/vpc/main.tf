@@ -91,7 +91,7 @@ resource "aws_route_table" "public_route_table" {
 
 # Create the route table for private subnets
 resource "aws_route_table" "private_route_table" {
-  for_each = aws_subnet.private_subnets
+  for_each = aws_nat_gateway.nat_gateway
 
   vpc_id = aws_vpc.main_vpc.id
 
