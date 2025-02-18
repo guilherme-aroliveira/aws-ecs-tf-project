@@ -120,10 +120,10 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_route_table_association" "private" {
-  for_each = var.private_subnets
+  for_each = aws_subnet.private_subnets
 
-  subnet_id      = aws_subnet.private_subnets[each.key].id
-  route_table_id = "private-subnet-${each.value}"
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.private_route_table[each.key].id
 
   depends_on = [aws_subnet.private_subnets]
 }
