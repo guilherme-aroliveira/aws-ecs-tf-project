@@ -45,7 +45,7 @@ resource "aws_eip" "nat_gateway_eip" {
   tags = merge(
     local.tags,
     {
-      Name        = "elastic-ip-nat-gateway-${each.key}"
+      Name        = "elastic-ip-nat-gateway-${each.value}"
       Environment = var.environment
     }
   )
@@ -63,7 +63,7 @@ resource "aws_nat_gateway" "nat_gateway" {
   tags = merge(
     local.tags,
     {
-      Name        = "nat-gateway-${each.key}"
+      Name        = "nat-gateway-${index(lookup(var.public_subnets, each.key))}"
       Environment = var.environment
     }
   )
@@ -103,7 +103,7 @@ resource "aws_route_table" "private_route_table" {
   tags = merge(
     local.tags,
     {
-      Name        = "private-route-table-${each.key}"
+      Name        = "private-route-table-${index(lookup(var.public_subnets, each.key))}"
       Environment = var.environment
     }
   )
@@ -123,7 +123,7 @@ resource "aws_route_table_association" "private" {
   for_each = aws_subnet.private_subnets
 
   subnet_id      = each.value.id
-  route_table_id = aws_route_table.private_route_table["private-route-table"]-[each.key].id
+  route_table_id = "${aws_route_table.private_route_table}-${index(lookup(var.public_subnets, each.key))}".id
 
   depends_on = [aws_subnet.private_subnets]
 }
