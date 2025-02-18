@@ -1,14 +1,14 @@
 # Create the VPC 
 resource "aws_vpc" "main_vpc" {
-  cidr_block = var.vpc_cidr
-  instance_tenancy = "default"
-  enable_dns_support = true
+  cidr_block           = var.vpc_cidr
+  instance_tenancy     = "default"
+  enable_dns_support   = true
   enable_dns_hostnames = true // expose DNS instead of an IP address
-  
-  tags = merge (
+
+  tags = merge(
     local.tags,
     {
-      Name = "main-vpc"
+      Name        = "main-vpc"
       Environment = var.environment
     }
   )
@@ -18,10 +18,10 @@ resource "aws_vpc" "main_vpc" {
 resource "aws_internet_gateway" "vpc_igw" {
   vpc_id = aws_vpc.main_vpc.id
 
-  tags = merge (
+  tags = merge(
     local.tags,
     {
-      Name = "internet-gateway"
+      Name        = "internet-gateway"
       Environment = var.environment
     }
   )
@@ -30,7 +30,7 @@ resource "aws_internet_gateway" "vpc_igw" {
 // Attach the internet gateway
 resource "aws_internet_gateway_attachment" "internet_gateway_attach" {
   internet_gateway_id = aws_internet_gateway.vpc_igw.id
-  vpc_id = aws_vpc.main_vpc.id
+  vpc_id              = aws_vpc.main_vpc.id
 }
 
 
@@ -39,13 +39,13 @@ resource "aws_eip" "nat_gateway_eip" {
   for_each = var.public_subnets
 
   domain = "vpc"
-  
-  depends_on = [ aws_internet_gateway.vpc_igw ]
 
-  tags = merge (
+  depends_on = [aws_internet_gateway.vpc_igw]
+
+  tags = merge(
     local.tags,
     {
-      Name = "elastic-ip-nat-gateway"
+      Name        = "elastic-ip-nat-gateway"
       Environment = var.environment
     }
   )
@@ -60,10 +60,10 @@ resource "aws_nat_gateway" "nat_gateway" {
 
   depends_on = [aws_subnet.public_subnets]
 
-  tags = merge (
+  tags = merge(
     local.tags,
     {
-      Name = "nat-gateway-${each.key}"
+      Name        = "nat-gateway-${each.key}"
       Environment = var.environment
     }
   )
@@ -74,16 +74,16 @@ resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.main_vpc.id
 
   route {
-    cidr_block = "0.0.0.0/0" # all IP addresses
+    cidr_block = "0.0.0.0/0"                     # all IP addresses
     gateway_id = aws_internet_gateway.vpc_igw.id # IPs addresses routed over the IGW
   }
 
   depends_on = [aws_internet_gateway.vpc_igw]
 
-  tags = merge (
+  tags = merge(
     local.tags,
     {
-      Name = "public-route-table"
+      Name        = "public-route-table"
       Environment = var.environment
     }
   )
@@ -91,17 +91,19 @@ resource "aws_route_table" "public_route_table" {
 
 # Create the route table for private subnets
 resource "aws_route_table" "private_route_table" {
+  for_each = aws_nat_gateway.nat_gateway
+
   vpc_id = aws_vpc.main_vpc.id
 
   route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gateway[each.key].id
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat_gateway.id
   }
 
-  tags = merge (
+  tags = merge(
     local.tags,
     {
-      Name = "private-route-table"
+      Name        = "private-route-table"
       Environment = var.environment
     }
   )
@@ -111,7 +113,7 @@ resource "aws_route_table" "private_route_table" {
 resource "aws_route_table_association" "public" {
   for_each = aws_subnet.public_subnets
 
-  subnet_id = each.value.id
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.public_route_table.id
 
   depends_on = [aws_subnet.public_subnets]
@@ -120,7 +122,7 @@ resource "aws_route_table_association" "public" {
 resource "aws_route_table_association" "private" {
   for_each = aws_subnet.private_subnets
 
-  subnet_id = each.value.id
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.private_route_table.id
 
   depends_on = [aws_subnet.private_subnets]
@@ -130,15 +132,15 @@ resource "aws_route_table_association" "private" {
 resource "aws_subnet" "public_subnets" {
   for_each = var.public_subnets
 
-  vpc_id = aws_vpc.main_vpc.id
-  cidr_block = cidrsubnet(var.vpc_cidr, 8, each.value + 100)
-  availability_zone = tolist(data.aws_availability_zones.available.names)[each.value]
+  vpc_id                  = aws_vpc.main_vpc.id
+  cidr_block              = cidrsubnet(var.vpc_cidr, 8, each.value + 100)
+  availability_zone       = tolist(data.aws_availability_zones.available.names)[each.value]
   map_public_ip_on_launch = true
 
-  tags = merge (
+  tags = merge(
     local.tags,
     {
-      Name = each.key
+      Name        = each.key
       Environment = var.environment
     }
   )
@@ -148,14 +150,14 @@ resource "aws_subnet" "public_subnets" {
 resource "aws_subnet" "private_subnets" {
   for_each = var.private_subnets
 
-  vpc_id = aws_vpc.main_vpc.id
-  cidr_block = cidrsubnet(var.vpc_cidr, 8, each.value)
+  vpc_id            = aws_vpc.main_vpc.id
+  cidr_block        = cidrsubnet(var.vpc_cidr, 8, each.value)
   availability_zone = tolist(data.aws_availability_zones.available.names)[each.value]
 
-  tags = merge (
+  tags = merge(
     local.tags,
     {
-      Name = each.key
+      Name        = each.key
       Environment = var.environment
     }
   )
