@@ -13,4 +13,5 @@ module "cloudwatch" {
   source = "../modules/cloudwatch"
   environment = "dev"
   ecs_cluster_name = module.ecs.ecs_cluster_name
+  ecs_cluster_id = module.ecs.ecs_cluster_id
 }

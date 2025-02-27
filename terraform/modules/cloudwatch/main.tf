@@ -4,6 +4,8 @@ resource "aws_cloudwatch_log_group" "ecs_log_group" {
   log_group_class = "STANDARD"
   retention_in_days = 120
 
+  depends_on = [ var.ecs_cluster_id ]
+
   tags = merge(
     local.tags,
     {
