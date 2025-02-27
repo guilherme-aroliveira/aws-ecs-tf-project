@@ -1,8 +1,29 @@
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = var.ecs_cluster_name
+
+  setting {
+    name = "containerInsights"
+    value = "enabled"
+  }
+
+  configuration {
+    execute_command_configuration {
+      log_configuration {
+        cloud_watch_log_group_name = var.ecs_cloudwatch_log
+      }
+    }
+  }
+
+  tags = merge(
+    local.tags,
+    {
+      Name = "ecs-${var.ecs_cluster_name}"
+      Environment = var.environment
+    }
+  )
 }
 
-resource "aws_ecs_service" "ecs_service" {
+/*resource "aws_ecs_service" "ecs_service" {
   name            = ""
   task_definition = aws_ecs_task_definition.ecs_task_springboot.id
   desired_count   = ""
@@ -39,4 +60,4 @@ resource "aws_ecs_task_definition" "ecs_task_springboot" {
   network_mode             = "awsvpc"
   execution_role_arn       = ""
   task_role_arn            = ""
-}
+}*/
