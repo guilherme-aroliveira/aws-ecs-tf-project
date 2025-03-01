@@ -90,11 +90,13 @@ resource "aws_route_table" "public_route_table" {
 
 # Create the route table for private subnets
 resource "aws_route_table" "private_route_table" {
+  for_each = aws_nat_gateway.nat_gateway
+
   vpc_id = aws_vpc.main_vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gateway.id
+    nat_gateway_id = aws_nat_gateway.nat_gateway[each.key].id
   }
 
   tags = merge(
