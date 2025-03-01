@@ -52,7 +52,7 @@ resource "aws_eip" "nat_gateway_eips" {
 }
 
 // Create the Nat gateway
-resource "aws_nat_gateway" "nat_gateway" {
+resource "aws_nat_gateway" "nat_gateways" {
   for_each = aws_subnet.public_subnets
 
   allocation_id = aws_eip.nat_gateway_eips[each.key].id
