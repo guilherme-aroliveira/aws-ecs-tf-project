@@ -36,6 +36,8 @@ resource "aws_internet_gateway_attachment" "internet_gateway_attach" {
 
 // Create the EIP for the Nat Gateway
 resource "aws_eip" "nat_gateway_eip" {
+  for_each = var.public_subnets
+
   domain = "vpc"
 
   depends_on = [aws_internet_gateway.vpc_igw]
@@ -43,7 +45,7 @@ resource "aws_eip" "nat_gateway_eip" {
   tags = merge(
     local.tags,
     {
-      Name        = "elastic-ip-nat-gateway"
+      Name        = "eip-${each.key}"
       Environment = var.environment
     }
   )
@@ -51,15 +53,16 @@ resource "aws_eip" "nat_gateway_eip" {
 
 // Create the Nat gateway
 resource "aws_nat_gateway" "nat_gateway" {
-  allocation_id = aws_eip.nat_gateway_eip.id
-  subnet_id     = element(aws_subnet.public_subnets.*.id, count.index) # nat should be in public subnet
+  for_each      = aws_subnet.public_subnets
+  allocation_id = aws_eip.nat_gateway_eip[each.key].id
+  subnet_id     = each.value.id # aws_subnet.public_subnets["public-subnet-1"].id # nat should be in public subnet
 
   depends_on = [aws_subnet.public_subnets]
 
   tags = merge(
     local.tags,
     {
-      Name        = "nat-gateway"
+      Name        = "nat-gateway-${each.key}"
       Environment = var.environment
     }
   )
