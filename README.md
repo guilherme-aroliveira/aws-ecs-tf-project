@@ -39,6 +39,6 @@ which executes a previously created GitHub Actions pipeline. Each pull request w
 
 ### License
 
-Copyright (c) 2024, Guilherme Oliveira. All rights reserved.
+Copyright (c) 2025, Guilherme Oliveira. All rights reserved.
 
 Licensed under the MIT License. See [LICENSE](LICENSE)
