@@ -35,7 +35,9 @@ resource "aws_internet_gateway_attachment" "internet_gateway_attach" {
 
 
 // Create the EIP for the Nat Gateway
-resource "aws_eip" "nat_gateway_eip" {
+resource "aws_eip" "nat_gateway_eips" {
+  for_each = aws_subnet.public_subnets
+
   domain = "vpc"
 
   depends_on = [aws_internet_gateway.vpc_igw]
@@ -43,7 +45,7 @@ resource "aws_eip" "nat_gateway_eip" {
   tags = merge(
     local.tags,
     {
-      Name        = "elastic-ip-nat-gateway"
+      Name        = "eip-nat-gateway-${each.key}"
       Environment = var.environment
     }
   )
@@ -51,15 +53,17 @@ resource "aws_eip" "nat_gateway_eip" {
 
 // Create the Nat gateway
 resource "aws_nat_gateway" "nat_gateway" {
-  allocation_id = aws_eip.nat_gateway_eip.id
-  subnet_id     = aws_subnet.public_subnets["public-subnet-1"].id # nat should be in public subnet
+  for_each = aws_subnet.public_subnets
+
+  allocation_id = aws_eip.nat_gateway_eips[each.key].id
+  subnet_id     = each.value.id # nat should be in public subnet
 
   depends_on = [aws_subnet.public_subnets]
 
   tags = merge(
     local.tags,
     {
-      Name        = "nat-gateway"
+      Name        = "nat-gateway-${each.key}"
       Environment = var.environment
     }
   )
@@ -79,7 +83,7 @@ resource "aws_route_table" "public_route_table" {
   tags = merge(
     local.tags,
     {
-      Name        = "public-route-table"
+      Name        = "public-rtb"
       Environment = var.environment
     }
   )
@@ -87,17 +91,19 @@ resource "aws_route_table" "public_route_table" {
 
 # Create the route table for private subnets
 resource "aws_route_table" "private_route_table" {
+ for_each = aws_subnet.private_subnets
+
   vpc_id = aws_vpc.main_vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.nat_gateway.id
+    nat_gateway_id = aws_nat_gateway.nat_gateway[tolist(aws_subnet.public_subnets)[each.value % length(aws_subnet.public_subnets)]].id
   }
 
   tags = merge(
     local.tags,
     {
-      Name        = "private-route-table"
+      Name        = "private-rtb-${each.key}"
       Environment = var.environment
     }
   )
@@ -117,7 +123,7 @@ resource "aws_route_table_association" "private" {
   for_each = aws_subnet.private_subnets
 
   subnet_id      = each.value.id
-  route_table_id = aws_route_table.private_route_table.id
+  route_table_id = aws_route_table.private_route_table[each.key].id
 
   depends_on = [aws_subnet.private_subnets]
 }
