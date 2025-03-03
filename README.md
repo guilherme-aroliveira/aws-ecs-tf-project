@@ -22,11 +22,11 @@ do not commit it to the git repository, because it contains sensitive data about
 
 Example of a backend file:
 ```terraform
-bucket = "bucket's name"
-key    = "bucket's arn"
-dynamodb_table = "dynamodb tables's name"
-region = "aws region"
-role_arn = "aws role to execute terraform with credentials"
+bucket          = "bucket's name"
+key             = "bucket's arn"
+dynamodb_table  = "dynamodb tables's name"
+region          = "aws region"
+role_arn        = "aws role to execute terraform with credentials"
 ```
 The infrastructure provisioning is performed by a pipeline file (example: pipelines.yaml),
 which executes a previously created GitHub Actions pipeline. Each pull request will trigger the pipeline.
