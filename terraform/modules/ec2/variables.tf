@@ -3,22 +3,37 @@ variable "environment" {
   default = ""
 }
 
+variable "ecs_cluster_name" {
+  description = "The name of ECS cluster"
+}
+
+variable "ecs_service_name" {
+  description = "The name of the ECS service"
+}
+
+variable "docker_container_port" {
+  description = "value"
+  type = string
+  default = "value"
+}
+
 variable "vpc_id" {
   description = "The ID of the VPC"
 }
 
-variable "public_subnet_1" {
-  description = "The ID of the public subnet 1"
+variable "vpc_cidr" {
+  description = "The VPC cidr block"
 }
 
-variable "public_subnet_2" {
-  description = "The ID of the public subnet 2"
+variable "public_subnets" {
+  description = "Public subnet IDs"
 }
 
-variable "public_subnet_3" {
-  description = "The ID of the public subnet 3"
+variable "ecs_acm_cert_arn" {
+  description = "value"
 }
 
-variable "ecs_cluster_name" {
-  description = "The name of ECS cluster"
+variable "domain_name" {
+  description = "value"
+  default = ""
 }
