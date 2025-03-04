@@ -7,8 +7,8 @@
             "name": "spring_profile_active",
             "value": "${spring_profile}"
         }],
-        "portMapping": [{
-            "containerPort": "${docker_container_port}"
+        "portMappings": [{
+            "containerPort": ${docker_container_port}
         }],
         "logConfiguration": {
             "logDriver": "awslogs",
