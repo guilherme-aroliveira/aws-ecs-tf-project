@@ -6,5 +6,5 @@ variable "environment" {
 variable "image_name" {
   description = "value"
   type        = string
-  default     = "springboot"
+  default     = "springbootapp"
 }
