@@ -19,11 +19,5 @@ resource "aws_route53_record" "route53_record" {
   ttl             = 60
   type            = each.value.id
   zone_id         = data.aws_route53_zone.route53_zone.zone_id
-
-  alias {
-    evaluate_target_health = false
-    name                   = var.ecs_lb.dns_name
-    zone_id                = var.ecs_lb.zone_id
-  }
 }
 

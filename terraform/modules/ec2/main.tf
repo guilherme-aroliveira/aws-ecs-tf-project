@@ -85,7 +85,7 @@ resource "aws_lb_listener_rule" "ecs_lb_listener_rule" {
 
   condition {
     host_header {
-      values = ["${var.ecs_service_name}.${domain_name}"]
+      values = ["${var.ecs_service_name}.${var.domain_name}"]
     }
   }
 }
