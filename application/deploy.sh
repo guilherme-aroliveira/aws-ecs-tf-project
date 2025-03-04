@@ -4,7 +4,6 @@ AWS_ACCOUNT_ID=""
 AWS_REGION="us-east-1"
 SERVICE_NAME="springbootapp"
 SERVICE_TAG="latest"
-ECR_REPO_URL="${ECR_repo}/${SERVICE_NAME}"
 
 if [ "$1" = "plan" ]; then
     cd /$HOME/Projects/github/aws-ecs-tf-project/terraform/environment/
@@ -27,7 +26,7 @@ elif [ "$1" = "build" ];then
     sh mvnw clean install
 
 elif [ "$1" = "dockerize" ]; then
-    find ../target/ -type f \( -name "*.jar" -not -name "*sources.jar" \) -exec cp {} ../application/$SERVICE_NAME.jar \;
+    find ../target/ -type f \( -name "*.jar" -not -name "*sources.jar" \) -exec cp {} ../application/${SERVICE_NAME}.jar \;
     aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
     docker build -t ${SERVICE_NAME}:${SERVICE_TAG} .
     docker tag IMAGE_ID ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/REPO:${SERVICE_TAG}
