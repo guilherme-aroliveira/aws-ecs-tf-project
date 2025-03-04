@@ -46,7 +46,7 @@ resource "aws_ecs_service" "ecs_service" {
 }
 
 data "template_file" "ecs_task_file" {
-  template = file("task_definition.json")
+  template = "${path.module}/task_definition.json"
 
   vars = {
     task_definition_name  = var.task_definition_name
