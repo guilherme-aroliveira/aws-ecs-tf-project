@@ -15,12 +15,13 @@ module "route53" {
 }
 
 module "ec2" {
-  source           = "../modules/ec2"
-  environment      = "dev"
-  vpc_id           = module.vpc.vpc_id
-  vpc_cidr         = module.vpc.vpc_cidr
-  public_subnets   = module.vpc.public_subnets
-  ecs_acm_cert_arn = module.acm.ecs_acm_cert_arn
+  source                = "../modules/ec2"
+  environment           = "dev"
+  vpc_id                = module.vpc.vpc_id
+  vpc_cidr              = module.vpc.vpc_cidr
+  public_subnets        = module.vpc.public_subnets
+  ecs_acm_cert_resource = module.acm.ecs_acm_cert_resource
+  ecs_acm_cert_arn      = module.acm.ecs_acm_cert_arn
 }
 
 module "ecs" {
