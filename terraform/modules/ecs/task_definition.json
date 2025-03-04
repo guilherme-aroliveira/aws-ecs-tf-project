@@ -1,14 +1,16 @@
 [
     {
         "name": "${task_definition_name}",
-        "image": "${docker_image_url}",
+        "image": "${ecr_uri}",
         "essential": true,
         "environment": [{
             "name": "spring_profile_active",
             "value": "${spring_profile}"
         }],
         "portMappings": [{
-            "containerPort": ${docker_container_port}
+            "containerPort": 8080,
+            "hostPort": 8080,
+            "protocol": "tcp"
         }],
         "logConfiguration": {
             "logDriver": "awslogs",

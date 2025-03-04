@@ -23,10 +23,21 @@ resource "aws_ecs_cluster" "ecs_cluster" {
   )
 }
 
+resource "aws_ecs_cluster_capacity_providers" "ecs_cluster_providers" {
+  cluster_name       = aws_ecs_cluster.ecs_cluster.name
+  capacity_providers = ["FARGATE", "FARGATE_SPOT"]
+
+  default_capacity_provider_strategy {
+    base              = 1
+    capacity_provider = "FARGATE_SPOT"
+    weight            = 100
+  }
+}
+
 resource "aws_ecs_service" "ecs_service" {
   name            = var.ecs_service_name
   task_definition = aws_ecs_task_definition.ecs_task_springboot.arn
-  desired_count   = var.desired_task_number
+  desired_count   = var.task_numbers
   cluster         = aws_ecs_cluster.ecs_cluster.name
   launch_type     = "FARGATE"
 
@@ -41,21 +52,19 @@ resource "aws_ecs_service" "ecs_service" {
     container_port   = 0
     target_group_arn = var.ecs_app_tg
   }
-  
-  depends_on = [ aws_ecs_cluster.ecs_cluster ]
+
+  depends_on = [aws_ecs_cluster.ecs_cluster]
 }
 
 data "template_file" "ecs_task_file" {
   template = "${path.module}/task_definition.json"
 
   vars = {
-    task_definition_name  = var.task_definition_name
-    ecs_service_name      = var.ecs_service_name
-    docker_image_url      = var.docker_image_url
-    memory                = var.memory
-    docker_container_port = var.docker_container_port
-    spring_profile        = var.spring_profile
-    region                = var.region
+    task_definition_name = var.task_definition_name
+    ecr_uri              = var.ecr_uri
+    spring_profile       = var.spring_profile
+    ecs_service_name     = var.ecs_service_name
+    region               = var.region
   }
 }
 
@@ -63,7 +72,7 @@ resource "aws_ecs_task_definition" "ecs_task_springboot" {
   container_definitions    = data.template_file.ecs_task_file.rendered
   family                   = var.task_definition_name
   cpu                      = 512
-  memory                   = var.memory
+  memory                   = 1024
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   execution_role_arn       = var.fargate_role

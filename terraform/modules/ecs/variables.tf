@@ -21,28 +21,10 @@ variable "task_definition_name" {
   default     = "springboot-task"
 }
 
-variable "desired_task_number" {
+variable "task_numbers" {
   description = "The"
   type        = string
   default     = "2"
-}
-
-variable "docker_image_url" {
-  description = "value"
-  type        = string
-  default     = "value"
-}
-
-variable "docker_container_port" {
-  description = "value"
-  type        = number
-  default     = 8080
-}
-
-variable "memory" {
-  description = "value"
-  type        = number
-  default     = 1024
 }
 
 variable "spring_profile" {
@@ -58,6 +40,10 @@ variable "region" {
 }
 
 ###### Values from outputs ######
+
+variable "ecr_uri" {
+  description = "The environment name the application"
+}
 
 variable "ecs_cloudwatch_log" {
   description = "The name of the cloudwatch log group"

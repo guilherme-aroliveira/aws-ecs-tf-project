@@ -24,14 +24,20 @@ module "ec2" {
   ecs_acm_cert_arn      = module.acm.ecs_acm_cert_arn
 }
 
+module "ecr" {
+  source      = "../modules/ecr"
+  environment = "dev"
+}
+
 module "ecs" {
-  source                = "../modules/ecs"
-  environment           = "dev"
-  ecs_cloudwatch_log    = module.cloudwatch.ecs_cloudwatch_log
-  public_subnets        = module.vpc.public_subnets
-  ecs_app_sg            = module.ec2.ecs_app_sg
-  fargate_role          = module.iam.fargate_role
-  ecs_app_tg            = module.ec2.ecs_app_tg
+  source             = "../modules/ecs"
+  environment        = "dev"
+  ecs_cloudwatch_log = module.cloudwatch.ecs_cloudwatch_log
+  public_subnets     = module.vpc.public_subnets
+  ecs_app_sg         = module.ec2.ecs_app_sg
+  fargate_role       = module.iam.fargate_role
+  ecs_app_tg         = module.ec2.ecs_app_tg
+  ecr_uri            = module.ecr.ecr_uri
 }
 
 module "cloudwatch" {
