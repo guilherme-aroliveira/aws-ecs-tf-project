@@ -21,8 +21,6 @@ resource "aws_ecs_cluster" "ecs_cluster" {
       Environment = var.environment
     }
   )
-
-  depends_on = [ var.ecs_cloudwatch_log_resource ]
 }
 
 resource "aws_ecs_service" "ecs_service" {
@@ -70,9 +68,4 @@ resource "aws_ecs_task_definition" "ecs_task_springboot" {
   network_mode             = "awsvpc"
   execution_role_arn       = var.fargate_role
   task_role_arn            = var.fargate_role
-
-  depends_on = [ 
-    aws_ecs_service.ecs_service, 
-    var.fargate_role_resource 
-  ]
 }

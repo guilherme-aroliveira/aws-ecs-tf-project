@@ -59,10 +59,6 @@ variable "region" {
 
 ###### Values from outputs ######
 
-variable "ecs_cloudwatch_log_resource" {
-  description = "value"
-}
-
 variable "ecs_cloudwatch_log" {
   description = "The name of the cloudwatch log group"
 }
