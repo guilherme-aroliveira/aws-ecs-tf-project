@@ -71,10 +71,6 @@ variable "public_subnets" {
   description = "The ID of the public subnets"
 }
 
-variable "fargate_role_resource" {
-  description = "value"
-}
-
 variable "fargate_role" {
   description = "value"
 }

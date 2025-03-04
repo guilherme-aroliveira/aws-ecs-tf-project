@@ -30,7 +30,6 @@ module "ecs" {
   ecs_cloudwatch_log    = module.cloudwatch.ecs_cloudwatch_log
   public_subnets        = module.vpc.public_subnets
   ecs_app_sg            = module.ec2.ecs_app_sg
-  fargate_role_resource = module.ecs.fargate_role_resource
   fargate_role          = module.iam.fargate_role
   ecs_app_tg            = module.ec2.ecs_app_tg
 }

@@ -25,7 +25,7 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 
 resource "aws_ecs_service" "ecs_service" {
   name            = var.ecs_service_name
-  task_definition = aws_ecs_task_definition.ecs_task_springboot.id
+  task_definition = aws_ecs_task_definition.ecs_task_springboot.arn
   desired_count   = var.desired_task_number
   cluster         = aws_ecs_cluster.ecs_cluster.name
   launch_type     = "FARGATE"
@@ -41,7 +41,7 @@ resource "aws_ecs_service" "ecs_service" {
     container_port   = 0
     target_group_arn = var.ecs_app_tg
   }
-
+  
   depends_on = [ aws_ecs_cluster.ecs_cluster ]
 }
 
@@ -61,7 +61,7 @@ data "template_file" "ecs_task_file" {
 
 resource "aws_ecs_task_definition" "ecs_task_springboot" {
   container_definitions    = data.template_file.ecs_task_file.rendered
-  family                   = aws_ecs_service.ecs_service.name
+  family                   = var.task_definition_name
   cpu                      = 512
   memory                   = var.memory
   requires_compatibilities = ["FARGATE"]
