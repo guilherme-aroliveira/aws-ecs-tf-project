@@ -1,6 +1,6 @@
 variable "domain_name" {
-  description = "value"
-  default = "guilhermeoliveira.ch"
+  description = "The Route53 domain"
+  default     = "guilhermeoliveira.ch"
 }
 
 variable "ecs_acm_cert" {

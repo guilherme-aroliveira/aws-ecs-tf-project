@@ -42,14 +42,17 @@ resource "aws_lb_listener" "ecs_lb_listener" {
     target_group_arn = aws_lb_target_group.ecs_tg.arn
   }
 
-  depends_on = [aws_lb_target_group.ecs_tg]
+  depends_on = [
+    aws_lb_target_group.ecs_tg,
+    var.ecs_acm_cert_resource
+  ]
 }
 
 ### Create a target group for the application #####
 resource "aws_lb_target_group" "ecs_app_tg" {
   name        = "${var.ecs_service_name}-tg"
   vpc_id      = var.vpc_id
-  port        = var.docker_container_port
+  port        = 8080
   protocol    = "HTTP"
   target_type = "ip"
 
@@ -141,7 +144,7 @@ resource "aws_vpc_security_group_ingress_rule" "ecs_lb_sg_ingress" {
 
 # Create a security group for the application
 resource "aws_security_group" "ecs_app_sg" {
-  name        = "ecs-service-name-sg"
+  name        = "${var.ecs_service_name}-sg"
   description = "Security group for springboot application to communicate in and out"
   vpc_id      = var.vpc_id
 }

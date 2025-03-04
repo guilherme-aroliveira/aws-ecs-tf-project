@@ -1,6 +1,6 @@
 variable "environment" {
   description = "The environment name the application"
-  default = ""
+  default     = ""
 }
 
 variable "ecs_cluster_name" {
@@ -11,53 +11,57 @@ variable "ecs_cluster_name" {
 
 variable "ecs_service_name" {
   description = "The name of the ECS service"
-  type = string
-  default = "springbootapp"
+  type        = string
+  default     = "springbootapp"
 }
 
 variable "task_definition_name" {
   description = "value"
-  type = string
-  default = "value"
+  type        = string
+  default     = "springboot-task"
 }
 
 variable "desired_task_number" {
   description = "The"
-  type = string
-  default = "2"
+  type        = string
+  default     = "2"
 }
 
 variable "docker_image_url" {
   description = "value"
-  type = string
-  default = "value"
+  type        = string
+  default     = "value"
 }
 
 variable "docker_container_port" {
   description = "value"
-  type = number
-  default = 8080
+  type        = number
+  default     = 8080
 }
 
 variable "memory" {
   description = "value"
-  type = number
-  default = 1024
+  type        = number
+  default     = 1024
 }
 
 variable "spring_profile" {
   description = "value"
-  type = string
-  default = "default"
+  type        = string
+  default     = "default"
 }
 
 variable "region" {
   description = "value"
-  type = string
-  default = "us-east-1"
+  type        = string
+  default     = "us-east-1"
 }
 
 ###### Values from outputs ######
+
+variable "ecs_cloudwatch_log_resource" {
+  description = "value"
+}
 
 variable "ecs_cloudwatch_log" {
   description = "The name of the cloudwatch log group"
@@ -69,6 +73,10 @@ variable "ecs_app_sg" {
 
 variable "public_subnets" {
   description = "The ID of the public subnets"
+}
+
+variable "fargate_role_resource" {
+  description = "value"
 }
 
 variable "fargate_role" {

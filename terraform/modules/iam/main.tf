@@ -43,6 +43,8 @@ resource "aws_iam_role_policy" "iam_ecs_cluster_policy" {
     ]
     Resource = "*"
   })
+
+  depends_on = [aws_iam_role.iam_ecs_cluster_role]
 }
 
 resource "aws_iam_role" "iam_fargate_role" {
@@ -53,7 +55,7 @@ resource "aws_iam_role" "iam_fargate_role" {
       Effect = "Allow"
       Principal = {
         Service = [
-          "ecs.amazonaws.com", 
+          "ecs.amazonaws.com",
           "ecs-task.amazonaws.com"
         ]
       }
@@ -81,4 +83,6 @@ resource "aws_iam_role_policy" "iam_fargate_role_policy" {
     ]
     Resource = "*"
   })
+
+  depends_on = [aws_iam_role.iam_fargate_role]
 }

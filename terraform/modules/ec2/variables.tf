@@ -1,20 +1,18 @@
 variable "environment" {
   description = "The environment name of the application"
-  default = ""
+  default     = ""
 }
 
 variable "ecs_cluster_name" {
-  description = "The name of ECS cluster"
+  description = "The name of the ECS Cluster"
+  type        = string
+  default     = "springboot-cluster"
 }
 
 variable "ecs_service_name" {
   description = "The name of the ECS service"
-}
-
-variable "docker_container_port" {
-  description = "value"
-  type = string
-  default = "value"
+  type        = string
+  default     = "springbootapp"
 }
 
 variable "vpc_id" {
@@ -29,11 +27,15 @@ variable "public_subnets" {
   description = "Public subnet IDs"
 }
 
+variable "ecs_acm_cert_resource" {
+  description = "The acm certificate resource"
+}
+
 variable "ecs_acm_cert_arn" {
-  description = "value"
+  description = "The certificate arn"
 }
 
 variable "domain_name" {
-  description = "value"
-  default = ""
+  description = "The Route53 domain"
+  default     = "guilhermeoliveira.ch"
 }
