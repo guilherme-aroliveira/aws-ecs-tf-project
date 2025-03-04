@@ -3,7 +3,7 @@ resource "aws_lb" "ecs_cluster_lb" {
   name            = "${var.ecs_cluster_name}-lb"
   internal        = false
   security_groups = [aws_security_group.ecs_lb_sg.id]
-  subnets         = var.public_subnets
+  subnets         = [var.public_subnets]
 
   tags = merge(
     local.tags,
